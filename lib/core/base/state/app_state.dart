@@ -1,0 +1,1 @@
+enum AppState { development, prod }

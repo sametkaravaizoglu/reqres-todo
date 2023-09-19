@@ -1,0 +1,26 @@
+name: reqres_app
+description: Reqress App
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  get: ^4.6.6
+  flutter_secure_storage: ^9.0.0
+  dio:
+  # for loading widget
+  flutter_overlay_loader: ^2.0.0
+  
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  talker_dio_logger: ^1.3.0
+  
+flutter:
+
+  uses-material-design: true
