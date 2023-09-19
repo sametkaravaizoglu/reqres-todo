@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:reqres_app/app/ui/pages/home_page/home_page.dart';
+import 'package:reqres_app/app/ui/pages/home_page/view/home_page.dart';
 import 'package:reqres_app/app/ui/pages/todo_page/todo_page.dart';
 import '../controller/root_controller.dart';
 

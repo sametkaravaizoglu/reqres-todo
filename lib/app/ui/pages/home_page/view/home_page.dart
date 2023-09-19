@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reqres_app/app/ui/utils/helper.dart';
 import 'package:reqres_app/core/init/theme/color_manager.dart';
-import '../../../controllers/home_controller.dart';
+import '../controller/home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});

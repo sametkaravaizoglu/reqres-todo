@@ -3,9 +3,8 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
-import 'package:reqres_app/app/ui/global_widgets/loading_widget.dart';
 import 'package:reqres_app/core/constants/application_constants.dart';
+// ignore: depend_on_referenced_packages
 import 'package:talker_dio_logger/talker_dio_logger.dart';
 import '../../../app/data/enums/preferences_keys.dart';
 import '../../base/model/base_model.dart';
@@ -41,9 +40,7 @@ class NetworkManager {
       TalkerDioLogger(
         settings: const TalkerDioLoggerSettings(
           printRequestHeaders: true,
-          printResponseHeaders: false,
           printResponseData: true,
-          printResponseMessage: false,
         ),
       ),
     );
@@ -67,15 +64,10 @@ class NetworkManager {
     required String path,
     T? model,
     Map<String, dynamic>? queryParameters,
-    BuildContext? context,
   }) async {
     var res;
 
     try {
-      if (context != null) {
-        Loader.show(context, progressIndicator: const LoadingOverlayWidget());
-      }
-
       Response<dynamic>? response = await _dio.get(
         path,
         queryParameters: queryParameters,
@@ -95,12 +87,6 @@ class NetworkManager {
       }
     } catch (e) {
       debugPrint(e.toString());
-    } finally {
-      if (context != null) {
-        if (Loader.isShown) {
-          Loader.hide();
-        }
-      }
     }
 
     return res;
@@ -111,16 +97,11 @@ class NetworkManager {
     T? model,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? data,
-    BuildContext? context,
     Options? options,
   }) async {
     var res;
 
     try {
-      if (context != null) {
-        Loader.show(context, progressIndicator: const LoadingOverlayWidget());
-      }
-
       Response response = await _dio.post(
         path,
         options: options ?? Options(headers: await header()),
@@ -139,12 +120,6 @@ class NetworkManager {
       }
     } catch (e) {
       debugPrint(e.toString());
-    } finally {
-      if (context != null) {
-        if (Loader.isShown) {
-          Loader.hide();
-        }
-      }
     }
 
     return res;
