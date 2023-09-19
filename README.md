@@ -1,16 +1,12 @@
-# reqres_app
 
-A new Flutter project.
+# Reqres App
+[✓] Flutter (Channel stable, 3.13.2)
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+![1](https://github.com/sametkaravaizoglu/reqres-todo/blob/main/screenshots/1.png?raw=true)
+![2](https://github.com/sametkaravaizoglu/reqres-todo/blob/main/screenshots/2.png?raw=true)
+![3](https://github.com/sametkaravaizoglu/reqres-todo/blob/main/screenshots/3.png?raw=true)
+![4](https://github.com/sametkaravaizoglu/reqres-todo/blob/main/screenshots/4.png?raw=true)
+![5](https://github.com/sametkaravaizoglu/reqres-todo/blob/main/screenshots/5.png?raw=true)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
