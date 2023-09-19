@@ -1,6 +1,6 @@
 
 import 'package:get/get.dart';
-import '../controllers/root_controller.dart';
+import '../ui/pages/root_page/controller/root_controller.dart';
 
 
 class RootBinding implements Bindings {

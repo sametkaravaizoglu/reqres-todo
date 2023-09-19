@@ -13,6 +13,7 @@ class ColorManager {
   Color get darkGray => const Color(0xff383838);
   Color get black => const Color(0xff020306);
   Color get transparent => const Color(0x00000000);
+  Color get borderGray => const Color(0xFFd3d3d3);
 
   MaterialColor get materialBlack => const MaterialColor(
         0xff000000,
