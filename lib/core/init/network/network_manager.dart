@@ -1,24 +1,26 @@
-// ignore_for_file: depend_on_referenced_packages, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_typing_uninitialized_variables
 
-import 'dart:isolate';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
-import 'package:reqres_app/app/data/enums/preferences_keys.dart';
+import 'package:reqres_app/app/ui/global_widgets/loading_widget.dart';
+import 'package:reqres_app/core/constants/application_constants.dart';
 import 'package:talker_dio_logger/talker_dio_logger.dart';
-import '../../../app/ui/global_widgets/loading_widget.dart';
+import '../../../app/data/enums/preferences_keys.dart';
 import '../../base/model/base_model.dart';
-import '../../constants/application_constants.dart';
 import '../cache/cache_manager.dart';
 
 class NetworkManager {
   static NetworkManager? _instance;
+
   static NetworkManager get instance {
     _instance ??= NetworkManager._init();
+
     return _instance!;
   }
+
+  String? uid;
 
   NetworkManager._init() {
     initManager();
@@ -32,6 +34,7 @@ class NetworkManager {
       contentType: Headers.jsonContentType,
       responseType: ResponseType.json,
     );
+
     _dio = Dio(baseOptions);
 
     _dio.interceptors.add(
@@ -66,12 +69,13 @@ class NetworkManager {
     Map<String, dynamic>? queryParameters,
     BuildContext? context,
   }) async {
-    ReceivePort receivePort = ReceivePort();
+    var res;
+
     try {
       if (context != null) {
         Loader.show(context, progressIndicator: const LoadingOverlayWidget());
       }
-      var data;
+
       Response<dynamic>? response = await _dio.get(
         path,
         queryParameters: queryParameters,
@@ -79,18 +83,15 @@ class NetworkManager {
           headers: await header(),
         ),
       );
+
       if (model == null) {
-        var value = response.data;
-        if (value is Map) {
-          value["statusCode"] = response.statusCode;
+        res = response.data;
+
+        if (res is Map) {
+          res["statusCode"] = response.statusCode;
         }
-        return value;
       } else {
-        await compute(
-          jsonBodyParserWithCompute,
-          [model, data ?? response.data, receivePort.sendPort],
-        );
-        return receivePort.first;
+        res = _jsonBodyParser<T>(model, response.data, response);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -100,8 +101,9 @@ class NetworkManager {
           Loader.hide();
         }
       }
-      receivePort.close();
     }
+
+    return res;
   }
 
   Future post<T extends IBaseModel>({
@@ -112,31 +114,28 @@ class NetworkManager {
     BuildContext? context,
     Options? options,
   }) async {
-    ReceivePort receivePort = ReceivePort();
+    var res;
 
     try {
       if (context != null) {
         Loader.show(context, progressIndicator: const LoadingOverlayWidget());
       }
 
-      Response<dynamic>? response = await _dio.post(
+      Response response = await _dio.post(
         path,
         options: options ?? Options(headers: await header()),
         queryParameters: queryParameters,
-        data: data,
+        data: jsonEncode(data),
       );
+
       if (model == null) {
-        var value = response.data;
-        if (value is Map) {
-          value["statusCode"] = response.statusCode;
+        res = response.data;
+
+        if (res is Map) {
+          res["statusCode"] = response.statusCode;
         }
-        return value;
       } else {
-        await compute(
-          jsonBodyParserWithCompute,
-          [model, data ?? response.data, receivePort.sendPort],
-        );
-        return receivePort.first;
+        res = _jsonBodyParser<T>(model, response.data, response);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -146,114 +145,22 @@ class NetworkManager {
           Loader.hide();
         }
       }
-      receivePort.close();
     }
+
+    return res;
   }
 
-  Future put<T extends IBaseModel>({
-    required String path,
-    T? model,
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? data,
-    BuildContext? context,
-    Options? options,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-
+  dynamic _jsonBodyParser<T>(IBaseModel model, dynamic jsonBody, response) async {
     try {
-      if (context != null) {
-        Loader.show(context, progressIndicator: const LoadingOverlayWidget());
-      }
-
-      Response<dynamic>? response = await _dio.put(
-        path,
-        options: options ?? Options(headers: await header()),
-        queryParameters: queryParameters,
-        data: data,
-      );
-      if (model == null) {
-        var value = response.data;
-        if (value is Map) {
-          value["statusCode"] = response.statusCode;
-        }
-        return value;
+      if (jsonBody is List) {
+        return jsonBody.map((e) => model.fromJson(e)).toList().cast<T>();
+      } else if (jsonBody is Map) {
+        return model.fromJson(jsonBody);
       } else {
-        await compute(
-          jsonBodyParserWithCompute,
-          [model, data ?? response.data, receivePort.sendPort],
-        );
-        return receivePort.first;
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      if (context != null) {
-        if (Loader.isShown) {
-          Loader.hide();
-        }
-      }
-      receivePort.close();
-    }
-  }
-
-  Future delete<T extends IBaseModel>({
-    required String path,
-    T? model,
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? data,
-    BuildContext? context,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    try {
-      if (context != null) {
-        Loader.show(context, progressIndicator: const LoadingOverlayWidget());
-      }
-
-      Response<dynamic>? response = await _dio.delete(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: Options(headers: await header()),
-      );
-      if (model == null) {
-        var value = response.data;
-        if (value is Map) {
-          value["statusCode"] = response.statusCode;
-        }
-        return value;
-      } else {
-        await compute(
-          jsonBodyParserWithCompute,
-          [model, data ?? response.data, receivePort.sendPort],
-        );
-        return receivePort.first;
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      if (context != null) {
-        if (Loader.isShown) {
-          Loader.hide();
-        }
-      }
-      receivePort.close();
-    }
-  }
-
-  jsonBodyParserWithCompute<T>(args) async {
-    IBaseModel model = args[0];
-    dynamic data = args[1];
-    SendPort port = args[2];
-    try {
-      if (data is List) {
-        port.send(data.map((e) => model.fromJson(e)).toList().cast<T>());
-      } else if (data is Map) {
-        port.send(model.fromJson(data));
-      } else {
-        port.send(data);
+        return jsonBody;
       }
     } catch (ex) {
-      port.send(data);
+      return response;
     }
   }
 }
